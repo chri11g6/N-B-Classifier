@@ -25,7 +25,7 @@ namespace NBC.logic {
 		}
 		
 		public void Compute(string inputData){
-			string[] datas = inputData.Split(';');
+			string[] datas = inputData.Split(',');
 
 			NBCColumn outputData = new NBCColumn {Name = "Output data"};
 
