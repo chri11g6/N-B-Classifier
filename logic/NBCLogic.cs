@@ -23,8 +23,8 @@ namespace NBC.logic {
 			double total = 1d;
 			string[] datas = inputData.Split(',');
 
-			foreach(string output in db.GetOutputList()){
-				outputProbabilityList.Add(output, 1d);
+			foreach(var output in db.GetOutputList()){
+				outputProbabilityList.Add(output.Key, output.Value.Probability);
 			}
 
 			for(int i = 0; i < datas.Length; i++){

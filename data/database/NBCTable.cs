@@ -1,10 +1,11 @@
 using System.Data;
+using NBC.dto;
 
 namespace NBC.data.database {
 	public class NBCTable : INBCTable {
 		private DataTable data;
 
-		private List<string> outputList = new List<string>();
+		private Dictionary<string, OutputData> outputList = new Dictionary<string, OutputData>();
 
 		public NBCTable() {
 			data = new DataTable();
@@ -18,8 +19,8 @@ namespace NBC.data.database {
 			columnNumber.DataType = typeof(int);
 		}
 
-        public void AddOutput(string output) {
-            outputList.Add(output);
+        public void AddOutput(string output, OutputData data) {
+            outputList.Add(output, data);
         }
 
         public void AddRowData(string input, string? output, double probability, int columnNumber){
@@ -38,8 +39,12 @@ namespace NBC.data.database {
 			outputList.Clear();
         }
 
-        public List<string> GetOutputList() {
-            return new List<string>(outputList);
+        public OutputData GetOutput(string output) {
+            return outputList[output];
+        }
+
+        public Dictionary<string, OutputData> GetOutputList() {
+            return new Dictionary<string, OutputData>(outputList);
         }
 
         public double GetProbability(string input, string? output, int columnNumber) {

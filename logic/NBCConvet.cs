@@ -1,5 +1,6 @@
 using System.Data;
 using NBC.data;
+using NBC.dto;
 
 namespace NBC.logic {
 	internal class NBCConvet {
@@ -32,11 +33,13 @@ namespace NBC.logic {
 							Output = r.Field<string>(outputName)
 						} into g
 						select new {
-							g.Key.Output
+							g.Key.Output,
+							Count = g.Count()
 						};
 
 			foreach(var item in outputQuery){
-				db.AddOutput(item.Output);
+				double probability = item.Count / (double)table.Rows.Count;
+				db.AddOutput(item.Output, new OutputData{ Probability = probability, Count = item.Count});
 			}
 		}
 
@@ -64,7 +67,7 @@ namespace NBC.logic {
 							};
 
 				foreach(var item in query){
-					int countOutput = table.Rows.Cast<DataRow>().Select(x => x[outputName] == item.Output).Count();
+					int countOutput = db.GetOutput(item.Output).Count;
 
 					double probability = item.Count / (double)countOutput;
 
