@@ -1,12 +1,12 @@
-using System.Collections;
 using System.Data;
-using NBC.models;
+using NBC.data;
 
 namespace NBC.logic {
 	internal class NBCConvet {
+		private INBCTable db = DataFacadePattern.NBCTable;
 		private Stack<string> columnNames = new Stack<string>();
-		private List<NBCColumn> querys = new List<NBCColumn>();
 		private string outputName = string.Empty;
+
 
 		private DataTable table;
 
@@ -14,11 +14,10 @@ namespace NBC.logic {
 			this.table = table;
 		}
 
-		public List<NBCColumn> Create(){
+		public void Create(){
 			GetColumnName();
 			GetOutput();
 			GetInput();
-			return querys;
 		}
 
 		private void GetColumnName(){
@@ -33,23 +32,12 @@ namespace NBC.logic {
 							Output = r.Field<string>(outputName)
 						} into g
 						select new {
-							g.Key.Output,
-							Count = g.Count()
+							g.Key.Output
 						};
 
-			NBCColumn column = new NBCColumn {Name = outputName};
-
 			foreach(var item in outputQuery){
-				NBCItem nbcItem = new NBCItem {
-					Output = item.Output,
-					Count = item.Count
-				};
-
-				column.item.Add(nbcItem);
+				db.AddOutput(item.Output);
 			}
-
-			querys.Add(column);
-
 		}
 
 		private void GetInput(){
@@ -75,28 +63,19 @@ namespace NBC.logic {
 								Count = g.Count()
 							};
 
-				NBCColumn column = new NBCColumn {Name = inputName};
-
 				foreach(var item in query){
-					NBCItem nbcItem = new NBCItem {
-						Input = item.Input,
-						Output = item.Output,
-						Count = item.Count
-					};
+					int countOutput = table.Rows.Cast<DataRow>().Select(x => x[outputName] == item.Output).Count();
 
-					column.item.Add(nbcItem);
+					double probability = item.Count / (double)countOutput;
+
+					db.AddRowData(item.Input, item.Output, probability, columnNames.Count);
 				}
 
 				foreach(var item in queryTotal){
-					NBCItem nbcItem = new NBCItem {
-						Input = item.Input,
-						Count = item.Count
-					};
+					double probability = item.Count / (double)table.Rows.Count;
 
-					column.itemNoOut.Add(nbcItem);
+					db.AddRowData(item.Input, string.Empty, probability, columnNames.Count);
 				}
-
-				querys.Add(column);
 			}
 		}
 

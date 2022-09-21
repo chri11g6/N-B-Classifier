@@ -1,7 +1,7 @@
 using System.Data;
 
-namespace NBC.data {
-    public class ReadCSV {
+namespace NBC.data.io {
+    public class ReadCSV : IReadCSV{
         public DataTable CSVtoDataTable(string strFilePath, char csvDelimiter) {
             DataTable dt = new DataTable();
             using (StreamReader sr = new StreamReader(strFilePath)) {

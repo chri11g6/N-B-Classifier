@@ -1,82 +1,47 @@
 using System.Data;
 using NBC.data;
-using NBC.models;
 
 namespace NBC.logic {
 	public class NBCLogic {
-		private DataTable table;
-		private ReadCSV reader = new ReadCSV();
-		private List<NBCColumn> querys;
+		private INBCTable db = DataFacadePattern.NBCTable;
+		private IReadCSV reader = DataFacadePattern.ReadCSV;
 
-		public void LoadData(string path){
-			table = reader.CSVtoDataTable(path, ';');
+		public NBCLogic() {
+			db.Clear();
 		}
 
-		public void Train(){
-			if(table is null)
-				return;
+		public void LoadData(string path){
+			DataTable table = reader.CSVtoDataTable(path, ',');
 
 			NBCConvet convet = new NBCConvet(table);
 
-			querys = convet.Create();
-
-			SetProbabilityInput();
-			SetProbabilityOutput();
+			convet.Create();
 		}
 		
-		public void Compute(string inputData){
+		public Dictionary<string, double> Compute(string inputData){
+			Dictionary<string, double> outputProbabilityList = new Dictionary<string, double>();
+			double total = 1d;
 			string[] datas = inputData.Split(',');
 
-			NBCColumn outputData = new NBCColumn {Name = "Output data"};
-
-
-			if(datas.Length != querys.Count -1)
-				return;
-
-			for(int i = 1; i < querys.Count; i++){
-				
+			foreach(string output in db.GetOutputList()){
+				outputProbabilityList.Add(output, 1d);
 			}
-		}
 
-		private void SetProbabilityInput(){
-			NBCColumn outputQuery = querys[0];
+			for(int i = 0; i < datas.Length; i++){
+				string input = datas[i];
 
-			for(int i = 1; i < querys.Count; i++){
-				NBCColumn query = querys[i];
-
-				foreach(NBCItem item in query.item){
-					NBCItem outputItem = null;
-
-					foreach(NBCItem itemOut in outputQuery.item){
-						if(itemOut.Output == item.Output){
-							outputItem = itemOut;
-							break;
-						}
-					}
-
-					item.OutputData = outputItem;
-
-					item.Probability = item.Count / (double)outputItem.Count;
+				foreach(string output in outputProbabilityList.Keys){
+					outputProbabilityList[output] *= db.GetProbability(input, output, i);
 				}
+
+				total *= db.GetProbability(input, null, i);
 			}
-		}
-
-		private void SetProbabilityOutput() {
-			NBCColumn outputQuery = querys[0];
-
-			foreach(NBCItem item in outputQuery.item){
-				item.Probability = 1d;
-
-				for(int i = 1; i < querys.Count; i++){
-					NBCColumn query = querys[i];
-
-					foreach(NBCItem itemIn in query.item){
-						if(itemIn.Output == item.Output){
-							item.Probability *= (double)itemIn.Probability;
-						}
-					}
-				}
+			
+			foreach(var output in outputProbabilityList){
+				outputProbabilityList[output.Key] = output.Value / total;
 			}
+
+			return outputProbabilityList;
 		}
 	}
 }

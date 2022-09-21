@@ -4,8 +4,8 @@ var NBC = new NBCLogic();
 
 NBC.LoadData(@"ML.csv");
 
-NBC.Train();
+Dictionary<string, double> outputs = NBC.Compute("Sunny,Cool,High,true");
 
-NBC.Compute("Sunny;Cool;High;true");
-
-Console.WriteLine("Hej med dig");
+foreach(var output in outputs){
+	Console.WriteLine($"{output.Key} => {output.Value}");
+}
