@@ -18,6 +18,25 @@ public class NBCTests {
     }
 
     [Test]
+    public void Is_Contains_Yes_Or_No() {        
+        Dictionary<string, double> outputs = nbc.Compute("Sunny,Cool,High,true");
+
+        Assert.IsTrue(outputs.ContainsKey("Yes"));
+        Assert.IsTrue(outputs.ContainsKey("No"));
+    }
+
+    [Test]
+    public void Test_algoritme() {
+        const double No = 0.9408;
+        const double Yes = 0.2419753086419753;
+        
+        Dictionary<string, double> outputs = nbc.Compute("Sunny,Cool,High,true");
+
+        Assert.AreEqual(No, outputs["No"]);
+        Assert.AreEqual(Yes, outputs["Yes"]);
+    }
+
+    [Test]
     public void Get_Exception_For_Missing_Some_Input() {
         Assert.Throws<Exception>(() => nbc.Compute("Cool,High,true"));
     }
