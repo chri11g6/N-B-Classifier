@@ -5,9 +5,11 @@ namespace Test;
 public class NBCTests {
     INBC nbc;
 
-    // [SetUp]
-    // public void Setup() {
-    // }
+    [SetUp]
+    public void Setup() {
+        nbc = new NBC.NBC();
+        nbc.LoadData(@"ML.CSV");
+    }
 
     [Test]
     public void Total_Output_Count() {
