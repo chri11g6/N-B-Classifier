@@ -11,29 +11,40 @@ public class NBC : INBC {
 
 
     public Dictionary<string, double> Compute(string inputData) {
+        string[] datas = inputData.Split(',');
+
+        if (db.GetConutOfInput() != datas.Length)
+            throw new MissingSomeException();
+
+		for (int i = 0; i < datas.Length; i++) {
+            string input = datas[i];
+			if(!db.DataExistInCol(input,i))
+				throw new WrongInputException();
+        }
+
         Dictionary<string, double> outputProbabilityList = new Dictionary<string, double>();
-			double total = 1d;
-			string[] datas = inputData.Split(',');
 
-			foreach(var output in db.GetOutputList()){
-				outputProbabilityList.Add(output.Key, output.Value.Probability);
-			}
+        foreach (var output in db.GetOutputList()) {
+            outputProbabilityList.Add(output.Key, output.Value.Probability);
+        }
 
-			for(int i = 0; i < datas.Length; i++){
-				string input = datas[i];
+        double total = 1d;
 
-				foreach(string output in outputProbabilityList.Keys){
-					outputProbabilityList[output] *= db.GetProbability(input, output, i);
-				}
+        for (int i = 0; i < datas.Length; i++) {
+            string input = datas[i];
 
-				total *= db.GetProbability(input, null, i);
-			}
-			
-			foreach(var output in outputProbabilityList){
-				outputProbabilityList[output.Key] = output.Value / total;
-			}
+            foreach (string output in outputProbabilityList.Keys) {
+                outputProbabilityList[output] *= db.GetProbability(input, output, i);
+            }
 
-			return outputProbabilityList;
+            total *= db.GetProbability(input, null, i);
+        }
+
+        foreach (var output in outputProbabilityList) {
+            outputProbabilityList[output.Key] = output.Value / total;
+        }
+
+        return outputProbabilityList;
     }
 
     public void LoadData(string path) {

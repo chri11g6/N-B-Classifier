@@ -39,6 +39,16 @@ namespace NBC.data.database {
 			outputList.Clear();
         }
 
+        public bool DataExistInCol(string input, int columnNumber) {
+            DataRow[] datas = data.Select($"Input = '{input}' AND ColumnNumber = '{columnNumber}'");
+
+			return datas.Length != 0;
+        }
+
+        public int GetConutOfInput() {
+            return (int) data.Select("ColumnNumber = MAX(ColumnNumber)").FirstOrDefault()[3] + 1;
+        }
+
         public OutputData GetOutput(string output) {
             return outputList[output];
         }

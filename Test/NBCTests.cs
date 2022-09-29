@@ -20,7 +20,7 @@ public class NBCTests {
     }
 
     [Test]
-    public void Is_Contains_Yes_Or_No() {        
+    public void Is_Contains_Yes_Or_No() {
         Dictionary<string, double> outputs = nbc.Compute("Sunny,Cool,High,true");
 
         Assert.IsTrue(outputs.ContainsKey("Yes"));
@@ -40,11 +40,11 @@ public class NBCTests {
 
     [Test]
     public void Get_Exception_For_Missing_Some_Input() {
-        Assert.Throws<Exception>(() => nbc.Compute("Cool,High,true"));
+        Assert.Throws<MissingSomeException>(() => nbc.Compute("Cool,High,true"));
     }
 
     [Test]
     public void Get_Exception_For_Wrong_Input() {
-        Assert.Throws<Exception>(() => nbc.Compute("Cool,High,true,Sunny"));
+        Assert.Throws<WrongInputException>(() => nbc.Compute("Cool,High,true,Sunny"));
     }
 }
