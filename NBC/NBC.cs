@@ -6,7 +6,7 @@ using NBC.logic;
 
 namespace NBC;
 public class NBC : INBC {
-    private INBCTable db = new NBCTable();
+    private INBCTable db;
     private IReadCSV reader = new ReadCSV();
 
 
@@ -41,6 +41,6 @@ public class NBC : INBC {
 
         NBCConvet convet = new NBCConvet(table);
 
-        convet.Create();
+        db = convet.Create();
     }
 }

@@ -16,10 +16,12 @@ namespace NBC.logic {
 			this.table = table;
 		}
 
-		public void Create(){
+		public INBCTable Create(){
 			GetColumnName();
 			GetOutput();
 			GetInput();
+
+			return db;
 		}
 
 		private void GetColumnName(){
